@@ -9,7 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
-#from models import Person
+from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -44,6 +44,18 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/people', methods=['GET'])
+def get_people():
+    people = Person.query.all()
+    return jsonify(people), 200
+
+
+@app.route('/people/<int:people_id>', methods=['GET'])
+def get_person_by_id(people_id):
+    result = Person.query.get(people_id)
+    return jsonify(result), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

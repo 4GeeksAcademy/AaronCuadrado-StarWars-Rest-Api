@@ -17,3 +17,19 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+    
+
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    height = db.Column(db.Integer, nullable=False)
+    mass = db.Column(db.Integer, nullable=False)
+    hair_color = db.Column(db.String(100), nullable=True)
+    eye_color = db.Column(db.String(100), nullable=True)
+    gender = db.Column(db.String(100), nullable=False)
+    birth_year = db.Column(db.String(100), nullable=False)
+    skin_color = db.Column(db.String(100), nullable=True)
+    
+
+
