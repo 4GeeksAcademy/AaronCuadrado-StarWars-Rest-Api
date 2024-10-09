@@ -88,18 +88,47 @@ def add_favorite_people(people_id):
     db.session.commit()
     return jsonify({'msg': 'Favorite people added'}), 201
 
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
+def delete_favorite_people(people_id):
+    user_id = request.json.get("user_id")
+    favorite = Favorite_People.query.filter_by(user_id=user_id, people_id=people_id).first()
+    if not favorite:
+        return jsonify({"msg": "Favorite people not found"}), 404
+    db.session.delete(favorite)
+    db.session.commit()
+    return jsonify({"msg": "Favorite people deleted"}), 200
+
 @app.route('/planets', methods=['GET'])
 def get_planets():
-    planets = Mundos.query.all()
-    return jsonify(planets), 200
+    planets = Planet.query.all()
+    planet = [planet.serialize() for planet in planets]
+    return jsonify(planet), 200
 
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])
-def get_planets_by_id(planets_id):
-    result = Mundos.query.get(planets_id)
-    if result is None:
-        return jsonify({ "msg": f"People with id {planets_id} not found" }), 404
-    return jsonify(result), 200
+def get_planet_id(planet_id):
+    planets = Planet.query.get(planet_id)
+    return jsonify(planets.serialize()), 200
+
+@app.route('/favorite/plan/<int:planet_id>', methods=['POST'])
+def add_favorite_planet(planet_id):
+    user_id = request.json.get("user_id")
+    if not user_id:
+        return jsonify({"msg": "User ID is required"}), 400
+    new_favorite = Favorite_Planet(user_id=user_id, planet_id=planet_id)
+    db.session.add(new_favorite)
+    db.session.commit()
+    return jsonify({"msg": "Favorite planet added"}), 201
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_favorite_planet(planet_id):
+    user_id = request.json.get("user_id")
+    favorite = Favorite_Planet.query.filter_by(user_id=user_id, planet_id=planet_id).first()
+    if not favorite:
+        return jsonify({"msg": "Favorite planet not found"}), 404
+    db.session.delete(favorite)
+    db.session.commit()
+    return jsonify({"msg": "Favorite planet deleted"}), 200
 
 
 # this only runs if `$ python src/app.py` is executed
