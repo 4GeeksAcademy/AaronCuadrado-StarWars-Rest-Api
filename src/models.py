@@ -43,3 +43,21 @@ class Mundos(db.Model):
     terrain = db.Column(db.String(100), nullable=False)
     surface_water = db.Column(db.Integer(100), nullable=False)
     population = db.Column(db.Integer(100), nullable=True)
+
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey('mundos.id'), nullable=True)
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id,
+            "person_id": self.person_id
+        }
+
+    user = db.relationship('User', backref=db.backref('favorites', lazy=True))
+    planet = db.relationship('Mundos', backref=db.backref('favorites', lazy=True))
+    person = db.relationship('Person', backref=db.backref('favorites', lazy=True))
