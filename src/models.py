@@ -50,21 +50,21 @@ class Favorite_People(db.Model):
     __tablename__ = 'favorites_peoples'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
+    people_id = db.Column(db.Integer, db.ForeignKey('people.id'), nullable=False)
 
 
 class Planet(db.Model):
     __tablename__ = 'planets'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    rotation_period = db.Column(db.Integer(255), nullable=False)
+    rotation_period = db.Column(db.Integer, nullable=False)
     orbital_period = db.Column(db.Integer, nullable=False)
     diameter = db.Column(db.Integer, nullable=False)
     climate = db.Column(db.String(100), nullable=True)
     gravity = db.Column(db.String(100), nullable=True)
     terrain = db.Column(db.String(100), nullable=False)
-    surface_water = db.Column(db.Integer(100), nullable=False)
-    population = db.Column(db.Integer(100), nullable=True)
+    surface_water = db.Column(db.Integer, nullable=False)
+    population = db.Column(db.Integer, nullable=True)
 
     def serialize(self):
         return{

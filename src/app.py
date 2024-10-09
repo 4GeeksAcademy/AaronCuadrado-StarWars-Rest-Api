@@ -50,7 +50,7 @@ def get_users():
 @app.route('/users/favorites', methods=['GET'])
 def get_user_favorites(user_id):
     user = User.query.get(user_id)
-    if not usert:
+    if not user:
         return jsonify({'msg': 'User not found'}), 404
     
     favorite_people = Favorite_People.query.filter_by(user_id=user_id).all()
