@@ -9,8 +9,8 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
-from models import Person
-from models import Mundos
+from models import People
+from models import Planet
 from models import Favorite_People
 from models import Favorite_Planet
 
@@ -52,19 +52,41 @@ def get_user_favorites(user_id):
     user = User.query.get(user_id)
     if not usert:
         return jsonify({'msg': 'User not found'}), 404
+    
+    favorite_people = Favorite_People.query.filter_by(user_id=user_id).all()
+    favorite_planets = Favorite_Planet.query.filter_by(user_id=user_id).all()
+
+    favorite_people_list = [{"id": fav.id, "people_id": fav.people_id} for fav in favorite_people]
+    favorite_planets_list = [{"id": fav.id, "planet_id": fav.planet_id} for fav in favorite_planets]
+
+    favorites = {
+        "favorite_people": favorite_people_list,
+        "favorite_planets": favorite_planets_list
+    }
+
+    return jsonify(favorites), 200
 
 @app.route('/people', methods=['GET'])
 def get_people():
-    people = Person.query.all()
+    people = People.query.all()
+    people = [p.serialize() for p in people]
     return jsonify(people), 200
 
 
 @app.route('/people/<int:people_id>', methods=['GET'])
-def get_person_by_id(people_id):
-    result = Person.query.get(people_id)
-    if result is None:
-        return jsonify({ "msg": f"People with id {people_id} not found" }), 404
-    return jsonify(result), 200
+def get_people_id(people_id):
+    p = People.query.get(people_id)
+    return jsonify(p.serialize()), 200
+    
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])
+def add_favorite_people(people_id):
+    user_id = request.json.get('user_id')
+    if not user_id:
+        return jsonify({'msg': 'User ID is required'}), 400
+    new_favorite = Favorite_People(user_id=user_id, people_id=people_id)
+    db.session.add(new_favorite)
+    db.session.commit()
+    return jsonify({'msg': 'Favorite people added'}), 201
 
 @app.route('/planets', methods=['GET'])
 def get_planets():
