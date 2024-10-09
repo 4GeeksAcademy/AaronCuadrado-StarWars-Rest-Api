@@ -32,4 +32,14 @@ class Person(db.Model):
     skin_color = db.Column(db.String(100), nullable=True)
     
 
-
+class Mundos(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    rotation_period = db.Column(db.Integer(255), nullable=False)
+    orbital_period = db.Column(db.Integer, nullable=False)
+    diameter = db.Column(db.Integer, nullable=False)
+    climate = db.Column(db.String(100), nullable=True)
+    gravity = db.Column(db.String(100), nullable=True)
+    terrain = db.Column(db.String(100), nullable=False)
+    surface_water = db.Column(db.Integer(100), nullable=False)
+    population = db.Column(db.Integer(100), nullable=True)

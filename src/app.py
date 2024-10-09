@@ -10,6 +10,7 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
 from models import Person
+from models import Mundos
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -54,8 +55,22 @@ def get_people():
 @app.route('/people/<int:people_id>', methods=['GET'])
 def get_person_by_id(people_id):
     result = Person.query.get(people_id)
+    if result is None:
+        return jsonify({ "msg": f"People with id {people_id} not found" }), 404
     return jsonify(result), 200
 
+@app.route('/planets', methods=['GET'])
+def get_planets():
+    planets = Mundos.query.all()
+    return jsonify(planets), 200
+
+
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def get_planets_by_id(planets_id):
+    result = Mundos.query.get(planets_id)
+    if result is None:
+        return jsonify({ "msg": f"People with id {planets_id} not found" }), 404
+    return jsonify(result), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
