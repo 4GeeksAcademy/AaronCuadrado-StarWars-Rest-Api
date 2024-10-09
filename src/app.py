@@ -11,6 +11,8 @@ from admin import setup_admin
 from models import db, User
 from models import Person
 from models import Mundos
+from models import Favorite_People
+from models import Favorite_Planet
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -38,13 +40,18 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_users():
+    users = User.query.all()
+    results = [{
+        'id': user.id,
+        'username': user.username} for user in users]
+    return jsonify(results), 200
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
+@app.route('/users/favorites', methods=['GET'])
+def get_user_favorites(user_id):
+    user = User.query.get(user_id)
+    if not usert:
+        return jsonify({'msg': 'User not found'}), 404
 
 @app.route('/people', methods=['GET'])
 def get_people():
@@ -71,46 +78,6 @@ def get_planets_by_id(planets_id):
     if result is None:
         return jsonify({ "msg": f"People with id {planets_id} not found" }), 404
     return jsonify(result), 200
-
-@app.route('/users', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    users_serialized = [user.serialize() for user in users]
-    return jsonify(users_serialized), 200
-
-@app.route('/users/favorites', methods=['GET'])
-def get_user_favorites():
-    user_id = 1  # Simulando el usuario actual (debería obtenerse mediante autenticación)
-    favorites = Favorite.query.filter_by(user_id=user_id).all()
-    favorites_serialized = [favorite.serialize() for favorite in favorites]
-    return jsonify(favorites_serialized), 200
-
-@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
-def add_favorite_planet(planet_id):
-    user_id = 1  # Simulando el usuario actual (debería obtenerse mediante autenticación)
-    new_favorite = Favorite(user_id=user_id, planet_id=planet_id)
-    db.session.add(new_favorite)
-    db.session.commit()
-    return jsonify(new_favorite.serialize()), 201
-
-@app.route('/favorite/people/<int:people_id>', methods=['POST'])
-def add_favorite_person(people_id):
-    user_id = 1  # Simulando el usuario actual (debería obtenerse mediante autenticación)
-    new_favorite = Favorite(user_id=user_id, person_id=people_id)
-    db.session.add(new_favorite)
-    db.session.commit()
-    return jsonify(new_favorite.serialize()), 201
-
-@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
-def delete_favorite_planet(planet_id):
-    user_id = 1  # Simulando el usuario actual (debería obtenerse mediante autenticación)
-    favorite = Favorite.query.filter_by(user_id=user_id, planet_id=planet_id).first()
-    if not favorite:
-        return jsonify({"msg": "Favorite not found"}), 404
-    db.session.delete(favorite)
-    db.session.commit()
-    return jsonify({"msg": "Favorite planet removed"}), 200
-
 
 
 # this only runs if `$ python src/app.py` is executed
